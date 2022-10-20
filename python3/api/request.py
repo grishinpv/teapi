@@ -20,7 +20,7 @@ class Payload:
         self.reports = reports
         self.tex_method = tex_method
 
-    def create_payload(self, file_name, file_type, features):
+    def create_payload(self, file_name, file_type, features, te_images = []):
         payload = {
             'file_name': file_name,
             'file_type': file_type,
@@ -28,22 +28,24 @@ class Payload:
         }
         if 'te' in features:
             payload['te'] = self.get_te_payload()
+            if len(te_images) != 0:
+                payload['images'] = te_images
         if 'extraction' in features:
             payload['extraction'] = self.get_tex_payload()
         return payload
 
-    def create_md5_payload(self, md5, file_name, file_type, features):
-        json_object = self.create_payload(file_name, file_type, features)
+    def create_md5_payload(self, md5, file_name, file_type, features, te_images = []):
+        json_object = self.create_payload(file_name, file_type, features, te_images)
         json_object['md5'] = md5
         return json_object
 
-    def create_sha1_payload(self, sha1, file_name, file_type, features):
-        json_object = self.create_payload(file_name, file_type, features)
+    def create_sha1_payload(self, sha1, file_name, file_type, features, te_images = []):
+        json_object = self.create_payload(file_name, file_type, features, te_images)
         json_object['sha1'] = sha1
         return json_object
 
-    def create_sha256_payload(self, sha256, file_name, file_type, features):
-        json_object = self.create_payload(file_name, file_type, features)
+    def create_sha256_payload(self, sha256, file_name, file_type, features, te_images = []):
+        json_object = self.create_payload(file_name, file_type, features, te_images)
         json_object['sha256'] = sha256
         return json_object
 
@@ -60,13 +62,14 @@ class Payload:
             )
         return json.dumps(payload, indent=4)
 
-    def create_upload_payload(self, file_data):
+    def create_upload_payload(self, file_data, te_images = []):
         return json.dumps(
             {'request': self.create_md5_payload(
                 file_data.md5,
                 file_data.file_name,
                 file_data.file_type,
-                file_data.features)},
+                file_data.features,
+                te_images)},
             indent=4)
 
     def get_te_payload(self):

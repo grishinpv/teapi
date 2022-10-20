@@ -45,10 +45,13 @@ class Run:
     cookies = {}
     report_set = set()
 
+    te_images = []
+
     def __init__(self, scan_directory, file_path, file_name, api_key, client_id, access_key, generate_token, server, reports_folder, tex_method, tex_folder,
                  features=DEFAULT_FEATURES,
                  reports=DEFAULT_REPORTS,
-                 recursive=DEFAULT_RECURSIVE_EMULATION):
+                 recursive=DEFAULT_RECURSIVE_EMULATION,
+                 te_images = []):
         """
         Setting the requested parameters and creating
         :param scan_directory: the requested directory
@@ -62,6 +65,7 @@ class Run:
         :param features: the requested features
         :param reports: type of reports
         :param recursive: find files in the requested directory recursively
+        :param te_images: list of dictionaries of images with revision
         """
         if api_key:
             self.headers = {'Authorization': api_key}
@@ -92,6 +96,8 @@ class Run:
         self.payload = Payload(reports, tex_method)
         self.server = server
         self.verify = True
+
+        self.te_images = te_images
 
         try:
             if reports_folder and not os.path.exists(reports_folder):
@@ -138,7 +144,7 @@ class Run:
                 continue
             try:
                 session = requests.Session()
-                json_request = self.payload.create_upload_payload(file_data)
+                json_request = self.payload.create_upload_payload(file_data, self.te_images)
 
                 Logger.log(LogLevel.DEBUG, json_request)
                 upload_url = utils.gs.get_selector(self.server, utils.gs.UPLOAD)

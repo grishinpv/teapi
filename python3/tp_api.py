@@ -59,6 +59,10 @@ def main():
                              choices=['convert', 'clean'],
                              default='convert',
                              help='Scrubbing method. Convert to PDF / CleanContent')
+    blades_info.add_argument('--te_images',
+                             nargs='+',
+                             default=[],
+                             help='Specify space separated image ids for emulation (see tecli show downloads images. Revision is always 1 (TODO)')
 
     reports_section = parser.add_argument_group('Reports info', 'Download Reports')
     reports_section.add_argument('-r', '--reports',
@@ -85,6 +89,7 @@ def main():
     file_path = ""
     file_name = ""
     directory = ""
+    te_images = []
 
     args.te and features.append('te')
     args.tex and features.append('extraction')
@@ -145,6 +150,12 @@ def main():
                 Logger.log(LogLevel.ERROR, 'Invalid file path in input (%s)' % args.file_path)
                 exit(-1)
 
+    if args.te_images:
+        if len(args.te_images) != 0:
+            for image in args.te_images:
+                te_images.append({'id': image, 'revision': 1})
+
+
     api = Run(directory,
               file_path,
               file_name,
@@ -158,7 +169,8 @@ def main():
               args.tex_folder,
               features,
               reports,
-              args.recursive)
+              args.recursive,
+              te_images)
 
     if not api.is_pending_files():
         Logger.log(LogLevel.INFO, 'The directory is empty')
