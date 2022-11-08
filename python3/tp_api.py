@@ -141,9 +141,9 @@ def main():
                 exit(-1)
             directory = args.directory
         else:
-            file_path = args.file_path.encode('utf-8')
+            file_path = args.file_path.encode('utf-8').decode("utf-8")
             if args.file_name and args.file_name != 0:
-                file_name = args.file_name.encode('utf-8')
+                file_name = args.file_name.encode('utf-8').decode("utf-8")
             else:
                 file_name = os.path.basename(file_path)
             if not os.path.isfile(args.file_path):
